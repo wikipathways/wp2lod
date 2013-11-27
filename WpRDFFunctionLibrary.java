@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
@@ -70,7 +71,7 @@ public class WpRDFFunctionLibrary {
 	public static WikiPathwaysClient startWpApiClient() throws MalformedURLException, ServiceException {
 		return new WikiPathwaysClient(new URL("http://www.wikipathways.org/wpi/webservice/webservice.php"));
 	}
-	public static IDMapperStack createBridgeDbMapper() throws ClassNotFoundException, IDMapperException{
+	public static IDMapperStack createBridgeDbMapper(Properties prop) throws ClassNotFoundException, IDMapperException{
 		BioDataSource.init();
 		Class.forName("org.bridgedb.rdb.IDMapperRdb");
 		File dir = new File("/tmp/OPSBRIDGEDB/"); //TODO Get Refector to get them directly form bridgedb.org
@@ -564,7 +565,7 @@ public class WpRDFFunctionLibrary {
 			lineResource.addLiteral(Gpml.zorder, zOrder);
 		}
 		lineResource.addProperty(DCTerms.isPartOf, pwResource);
-		lineResource.addProperty(RDF.type, Gpml.Line);
+		lineResource.addProperty(RDF.type, Gpml.Interaction);
 		if (lineGraphicsLineThickness!=null){
 			lineResource.addLiteral(Gpml.linethickness, lineGraphicsLineThickness);
 		}
@@ -599,8 +600,8 @@ public class WpRDFFunctionLibrary {
 				y =Float.valueOf(points.item(i).getAttributes().getNamedItem("RelY").getTextContent().trim());
 			}
 
-			if (arrowHead !=""){
-				lineResource.addProperty(Gpml.arrowTowards, graphRef);
+			if ((arrowHead !="") && (graphRef!="")){
+				lineResource.addLiteral(Gpml.arrowTowards, graphRef);
 				lineResource.addLiteral(Gpml.arrowHead, arrowHead);
 				arrowHeads.add(arrowHead);
 				arrowTowards.add(graphRef);
@@ -883,7 +884,7 @@ public class WpRDFFunctionLibrary {
         XMLInputFactory xmlInFactory = XMLInputFactory.newFactory();
         
         	
-        File dir = new File("/tmp/"+gpmlLocation);
+        File dir = new File(gpmlLocation);
         
         File[] rootFiles = dir.listFiles();
         //the section below is only in case of analysis sets
@@ -941,7 +942,7 @@ public class WpRDFFunctionLibrary {
 	}
 	public static void addPathwayOntologyTriples(Model model, Resource pwResource, Node ontologyNode){
 		String identifier = basicCalls.getStringNodeContent(ontologyNode, "bp:ID");
-		pwResource.addProperty(Wp.pathwayOntology, model.createResource(constants.getOntologyURI(identifier).replace(":", "_").replace("http_", "http:"))); //TDOD discuss with Tina and Alex about what to do with this
+		pwResource.addProperty(Wp.pathwayOntology, model.createResource(constants.getOntologyURI(identifier).replace(":", "_").replace("http_", "http:").trim())); //TDOD discuss with Tina and Alex about what to do with this
 
 	}
 
