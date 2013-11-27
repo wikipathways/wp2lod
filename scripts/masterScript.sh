@@ -5,7 +5,7 @@ rm -rf /tmp/OPSWPRDF
 mkdir /tmp/OPSWPRDF
 rm -rf /tmp/OPSWIKIDUMP
 mkdir /tmp/OPSWIKIDUMP
-#rm -rf /tmp/OPSBRIDGEDB
+rm -rf /tmp/OPSBRIDGEDB
 mkdir -p /tmp/OPSBRIDGEDB
 cp ../BioDataSource.ttl /tmp
 wget -O /tmp/OPSWIKIDUMP/Anopheles%20gambiae.zip "http://www.wikipathways.org//wpi/batchDownload.php?species=Anopheles%20gambiae&fileType=gpml&tag=Curation:AnalysisCollection"
