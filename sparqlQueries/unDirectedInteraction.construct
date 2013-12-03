@@ -1,8 +1,7 @@
-# This CONSTRUCT query annotates WikiPathways Directed Interactions. 
-
+# This CONSTRUCT query annotates WikiPathways unDirected Interactions. 
 
 CONSTRUCT {
-	?line rdf:type wp:Inhibition .
+	?line rdf:type wp:undirectedInteraction .
 }
 WHERE {
 	?pathway dc:identifier ?wpIdentifier .{
@@ -22,11 +21,10 @@ WHERE {
    				?datanode1 dcterms:isPartOf ?pathway .
    				?line gpml:graphref ?dn1GraphId .
    				?line a gpml:Interaction .
-   				?line gpml:arrowTowards ?target .
-   				?line gpml:arrowHead "Arrow"^^xsd:string .
    				?line gpml:graphid ?lineGraphId .
    				?line dcterms:isPartOf ?pathway .}}
    				FILTER (!regex(str(?datanode1), "noIdentifier")) .
+				FILTER NOT EXISTS {?line gpml:arrowHead ?arrowhead} .
 			}
 		}
 	}
