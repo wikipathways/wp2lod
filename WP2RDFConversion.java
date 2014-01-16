@@ -1,6 +1,9 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +22,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -82,7 +90,8 @@ public class WP2RDFConversion {
 		 */
 		Model bridgeDbmodel = WpRDFFunctionLibrary.createBridgeDbModel();
 		IDMapperStack mapper = WpRDFFunctionLibrary.createBridgeDbMapper(prop);
-
+		InputStream in = new FileInputStream("/tmp/BioDataSource.ttl");
+        bridgeDbmodel.read(in, "", "TURTLE");
 		
 		/* From here on the actual RDF conversion starts. The concatenated pathways into a single file is loaded and now
 		 * being processed in a strait forward way. First the pathway information is converted into RDF and then each individual
@@ -162,10 +171,32 @@ public class WP2RDFConversion {
 		Date myDate = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		String myDateString = sdf.format(myDate);
+		
+		
+				
+		
 		FileUtils.writeStringToFile(new File("latestVersion.txt"), "v"+schemaVersion+"."+softwareVersion+"."+latestRevision+"_"+myDateString);
 		basicCalls.saveRDF2File(model, "/tmp/wpContent_v"+schemaVersion+"."+softwareVersion+"."+latestRevision+"_"+myDateString+".ttl", "TURTLE");
 		basicCalls.saveRDF2File(voidModel, "/tmp/void.ttl", "TURTLE");
 		basicCalls.saveRDF2File(openPhactsLinkSets, "/tmp/opsLinkSets_v"+schemaVersion+"."+softwareVersion+"."+latestRevision+"_"+myDateString+".ttl", "TURTLE");
+		/*BufferedReader constructQueryText = new BufferedReader(new FileReader("sparqlQueries/DirectedInteraction.construct"));
+
+        StringBuilder sb = new StringBuilder();
+        String line = constructQueryText.readLine();
+
+        while (line != null) {
+            sb.append(line);
+            sb.append('\n');
+            line = constructQueryText.readLine();
+        }
+        String queryText = sb.toString();
+        */
+	
+	/*Query query = QueryFactory.create(queryText);
+	QueryExecution queryExecution = QueryExecutionFactory.create(query, model);
+	Model results = queryExecution.execConstruct();
+	basicCalls.saveRDF2File(results, "/tmp/directedInteractions.ttl", "TURTLE");
+	*/
 	}
 
 }

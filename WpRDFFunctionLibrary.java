@@ -77,7 +77,7 @@ public class WpRDFFunctionLibrary {
 		File dir = new File(prop.getProperty("bridgefiles")); //TODO Get Refector to get them directly form bridgedb.org
 		FilenameFilter filter = new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
-		        return name.toLowerCase().endsWith(".txt");
+		        return name.toLowerCase().endsWith(".bridge");
 		    }
 		};
 	
@@ -217,6 +217,16 @@ public class WpRDFFunctionLibrary {
 			String unifiedEntrezGeneDataNodeIdentifier = URLEncoder.encode(unifiedEntrezGeneId.getId(), "UTF-8");
 			Resource unifiedEntrezGeneIdResource = model.createResource("http://identifiers.org/entrez.gene/"+unifiedEntrezGeneDataNodeIdentifier);
 			internalWPDataNodeResource.addProperty(Wp.bdbEntrezGene, unifiedEntrezGeneIdResource);
+		}
+		
+		//HGNC Symbols
+		Set<Xref> unifiedHGNCSymboXref = mapper.mapID(idXref, DataSource.getBySystemCode("H"));
+		Iterator<Xref> iterhgncsymbol = unifiedHGNCSymboXref.iterator();
+		while (iterhgncsymbol.hasNext()){
+			Xref unifiedHGNCSymbol = (Xref) iterhgncsymbol.next();
+			String unifiedHGNCSymbolDataNodeIdentifier = URLEncoder.encode(unifiedHGNCSymbol.getId(), "UTF-8");
+			Resource unifiedHGNCSymbolResource = model.createResource("http://identifiers.org/hgnc.symbol/"+unifiedHGNCSymbolDataNodeIdentifier);
+			internalWPDataNodeResource.addProperty(Wp.bdbHgncSymbol, unifiedHGNCSymbolResource);
 		}
 		//HMDB
 		Set<Xref> unifiedHmdbIdXref = mapper.mapID(idXref, BioDataSource.HMDB);
@@ -440,7 +450,7 @@ public class WpRDFFunctionLibrary {
 		}
 
 		Resource internalWPDataNodeResource = model.createResource("http://rdf.wikipathways.org/Pathway/"+wpId+"_r"+revId+"/DataNode/"+dataNodeGraphId);
-		Resource dataNodeResource = model.createResource(conceptUrl.replace("$id", dataNodeIdentifier));
+		Resource dataNodeResource = model.createResource(URLEncoder.encode(conceptUrl.replace("$id", dataNodeIdentifier), "UTF-8"));
 		Resource identifiersOrgResource= model.createResource();
 		if (dataNodeDataSource == ""){
 			internalWPDataNodeResource = model.createResource("http://rdf.wikipathways.org/Pathway/"+wpId+"_r"+revId+"/noDatasource/"+ UUID.randomUUID());
@@ -733,7 +743,7 @@ public class WpRDFFunctionLibrary {
 			String anchorShape;
 			if (anchors.item(i).getAttributes().getNamedItem("Shape")!=null)
 				anchorResource.addLiteral(Gpml.anchorShape,anchors.item(i).getAttributes().getNamedItem("Shape").getTextContent().trim());
-			lineResource.addLiteral(Gpml.hasAnchor, anchorResource);
+			lineResource.addProperty(Gpml.hasAnchor, anchorResource);
 		}
 	}
 
